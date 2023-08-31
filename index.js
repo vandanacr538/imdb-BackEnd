@@ -8,7 +8,7 @@ let PORT=process.env.PORT;
 app.use(express.json());
 const api=require("./api");
 let mongoose=require("mongoose");
-let dbUrl="mongodb+srv://Vandana5:DbTesT123@cluster0.1gjyzyo.mongodb.net/IMDb-DB";
+let dbUrl="<enter db url to run>";
 
 app.listen(PORT, (err)=>{
     if(err){
@@ -21,7 +21,7 @@ mongoose.connect(dbUrl).then(()=>{
     console.log("connected to db");
 })
 .catch((error)=>{
-    console.log(error);
+    console.log("some error occurred");
 });
 
 app.use("/", api);
