@@ -26,10 +26,16 @@ router.post("/addtowatchlist", async (req, res) => {
     release_date: release_date,
     vote_average: vote_average,
   };
-  const movie = new Watchlist(newMovie);
-  const movieAdded = await movie.save();
-  if (movieAdded) {
-    console.log(movieAdded);
+  const alreadyExist=await Watchlist.findOne({userid:decodeToken.uid, id:id});
+  if(alreadyExist){
+    res.status(200).send({msg:"This movie alraedy exists in Watchlist"});
+  }
+  else{
+    const movie = new Watchlist(newMovie);
+    const movieAdded = await movie.save();
+    if (movieAdded) {
+      res.status(200).send({msg:"movie added to watchlist"});
+    }
   }
 });
 
