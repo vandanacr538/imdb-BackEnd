@@ -1,26 +1,8 @@
 const express=require("express");
+const axios=require("axios");
 const router=express.Router();
 const jwt=require("jsonwebtoken");
 const Users=require("../Schema/UserSchema");
-const {OAuth2Client}=require("google-auth-library");
-
-// Function to decode Google OAuth token
-const getDecodedOAuthJwtGoogle=async(token)=>{
-    const CLIENT_ID_GOOGLE = '<enter your Google ClientId>';
-    try{
-        const client=new OAuth2Client(CLIENT_ID_GOOGLE);
-        const ticket = await client.verifyIdToken({
-            idToken: token,
-            audience: CLIENT_ID_GOOGLE,
-        })
-      
-        return ticket;
-    }
-    catch(error){
-        return { status: 500, data: error }
-    }
-} 
-
 
 // API to login to IMDb
 router.post("/loginapi", async(req, res)=>{
@@ -43,8 +25,13 @@ router.post("/loginapi", async(req, res)=>{
 
 // API to login with google oauth
 router.post("/oauth", async(req,res)=>{
-    const tokenInfo = await getDecodedOAuthJwtGoogle(req.body.token);
-    const userEmail=JSON.parse(JSON.stringify(tokenInfo)).payload.email;
+    const userInfo = await axios
+    .get('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${req.body.token}` },
+    })
+    console.log(userInfo.data);
+    const userEmail=userInfo.data.email;
+    console.log(userEmail);
     const alreadyExists=await Users.findOne({Username:userEmail});
     if(alreadyExists){
         console.log(alreadyExists);
@@ -69,4 +56,4 @@ router.post("/oauth", async(req,res)=>{
 
 })
 
-module.exports=router;
+module.exports=router;                              
