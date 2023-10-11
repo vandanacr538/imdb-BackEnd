@@ -6,18 +6,28 @@ dotenv.config();
 const nodemailer = require("nodemailer");
 const CreateUser=require("../Schema/UserSchema");
 
-function generateOtp() {
+function generateOtp() {        
     const otp = Math.random() * 1000000;
     return Math.trunc(otp);
 }
-const transporter=nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port:587,
-    auth: {
-        user:process.env.NODEMAILER_USERNAME, 
-        pass:process.env.NODEMAILER_PASSWORD, 
-    },
-});
+const sendOTP=async(otp, newUserEmailID)=>{
+    const transporter=nodemailer.createTransport({
+        service: "Gmail",
+        host: 'smtp.gmail.com',
+        auth: {
+            user:process.env.NODEMAILER_USERNAME, 
+            pass:process.env.NODEMAILER_PASSWORD, 
+        },
+    });
+    const mailHTML="<h1>Welcome to IMDb</h1>"+`<h3>Your OTP to complete IMDb new account creation process: ${otp}</h3>`;
+    const info=await transporter.sendMail({
+        from:process.env.NODEMAILER_USERNAME,  
+        to:newUserEmailID, 
+        subject:" Verify your new IMDb account ✔", 
+        text:"OTP verification", 
+        html:mailHTML, 
+    });
+}
 
 // API to create account for new user
 router.post("/createaccountapi", async(req, res)=>{
@@ -45,14 +55,7 @@ router.post("/createaccountapi", async(req, res)=>{
         const jwtToken=jwt.sign(newUserAdded.toJSON(),"mysecretkey");
         if (newUserAdded) {
             res.status(200).send({msg:"New user added successfully!", token:jwtToken});
-            const mailHTML="<h1>Welcome to IMDb</h1>"+`<h3>Your OTP to complete IMDb new account creation process: ${otp}</h3>`;
-            const info=await transporter.sendMail({
-                from:process.env.NODEMAILER_USERNAME,  
-                to:newUserAdded.email, 
-                subject:" Verify your new IMDb account ✔", 
-                text:"OTP verification", 
-                html:mailHTML, 
-            });
+            sendOTP(otp, newUserAdded.email);
             console.log("OTP sent");
             setTimeout(async () => {
                 console.log(' otp expiration time starts now ')
