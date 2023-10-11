@@ -24,6 +24,9 @@ const schema=new mongoose.Schema({
     re_enter_password:{
         type:String,
         required:true
+    },
+    otp:{
+        type:String
     }
 });
 
