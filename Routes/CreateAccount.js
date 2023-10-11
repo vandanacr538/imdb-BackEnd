@@ -1,6 +1,8 @@
 const express=require("express");
 const router = express.Router();
 const jwt=require("jsonwebtoken");
+const dotenv=require("dotenv");
+dotenv.config();
 const nodemailer = require("nodemailer");
 const CreateUser=require("../Schema/UserSchema");
 
@@ -12,8 +14,8 @@ const transporter=nodemailer.createTransport({
     host: 'smtp.ethereal.email',
     port:587,
     auth: {
-        user:"", // enter ethernal email 
-        pass:"",  // enter password
+        user:process.env.NODEMAILER_USERNAME, 
+        pass:process.env.NODEMAILER_PASSWORD, 
     },
 });
 
@@ -45,7 +47,7 @@ router.post("/createaccountapi", async(req, res)=>{
             res.status(200).send({msg:"New user added successfully!", token:jwtToken});
             const mailHTML="<h1>Welcome to IMDb</h1>"+`<h3>Your OTP to complete IMDb new account creation process: ${otp}</h3>`;
             const info=await transporter.sendMail({
-                from:"haskell.kuvalis@ethereal.email",  
+                from:process.env.NODEMAILER_USERNAME,  
                 to:newUserAdded.email, 
                 subject:" Verify your new IMDb account ✔", 
                 text:"OTP verification", 

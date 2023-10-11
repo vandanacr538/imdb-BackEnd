@@ -8,7 +8,7 @@ let PORT=process.env.PORT;
 app.use(express.json());
 const api=require("./api");
 let mongoose=require("mongoose");
-let dbUrl="<enter db url to run>";
+let dbUrl=process.env.DB_URL;
 
 app.listen(PORT, (err)=>{
     if(err){
