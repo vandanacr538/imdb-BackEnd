@@ -1,14 +1,6 @@
 const mongoose=require("mongoose");
 
 const schema=new mongoose.Schema({
-    // Username:{
-    //     type:String,
-    //     required:true
-    // },
-    // Password:{
-    //     type:String,
-    //     required:true
-    // }
     name:{
         type:String,
         required:true
@@ -23,7 +15,7 @@ const schema=new mongoose.Schema({
     },
     re_enter_password:{
         type:String,
-        required:true
+        // required:true
     },
     otp:{
         type:String
