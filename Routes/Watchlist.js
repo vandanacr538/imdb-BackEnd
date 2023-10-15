@@ -17,7 +17,7 @@ router.post("/addtowatchlist", async (req, res) => {
   const decodeToken=jwt.verify(req.headers.authorization, "mysecretkey");
 
   const newMovie = {
-    userid:decodeToken.uid,
+    userid:decodeToken._id,
     backdrop_path: backdrop_path,
     id: id,
     original_title: original_title,
@@ -26,7 +26,7 @@ router.post("/addtowatchlist", async (req, res) => {
     release_date: release_date,
     vote_average: vote_average,
   };
-  const alreadyExist=await Watchlist.findOne({userid:decodeToken.uid, id:id});
+  const alreadyExist=await Watchlist.findOne({userid:decodeToken._id, id:id});
   if(alreadyExist){
     res.status(200).send({msg:"This movie alraedy exists in Watchlist"});
   }
@@ -42,8 +42,8 @@ router.post("/addtowatchlist", async (req, res) => {
 // API to get my watchlist
 router.get("/mywatchlist", async(req,res)=>{
     const decodeToken=jwt.verify(req.headers.authorization, "mysecretkey");
-    console.log(decodeToken.uid);
-    const mywatchlist= await Watchlist.find({userid:decodeToken.uid});
+    console.log(decodeToken._id);
+    const mywatchlist= await Watchlist.find({userid:decodeToken._id});
     if(mywatchlist){
         const obj={results:mywatchlist}
         res.status(200).send(obj);

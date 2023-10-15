@@ -88,4 +88,23 @@ router.post("/verifyotp", async (req,res)=>{
     }
 })
 
+// API to edit user profile
+router.post("/edituserdata", async (req, res)=>{
+    const {name, email, new_password, re_enter_new_password}=req.body;
+    const updatedUserData=await CreateUser.findOneAndUpdate({email:email},{
+        name: name,
+        email: email,
+        password: new_password,
+        re_enter_password: re_enter_new_password,
+    });
+    if(updatedUserData){
+        console.log(updatedUserData);
+        const jwtToken=jwt.sign(updatedUserData.toJSON(),"mysecretkey");
+        res.status(200).send({msg:"Edited user data updated successfully!", token:jwtToken});
+    }
+    else{
+        res.status(404).send({msg:"User Not Found"});
+    }
+
+})
 module.exports=router;
