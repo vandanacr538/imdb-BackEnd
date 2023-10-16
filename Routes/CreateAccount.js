@@ -107,4 +107,15 @@ router.post("/edituserdata", async (req, res)=>{
     }
 
 })
+
+// API to get UserProfile data
+router.post("/getuserprofiledata", async function(req,res){
+    const {email}=req.body;
+    const userExists=await CreateUser.findOne({email:email});
+    console.log(userExists);
+    const jwtToken=jwt.sign(userExists.toJSON(),"mysecretkey");
+    if(userExists){
+        res.status(200).send({token:jwtToken});
+    }
+})
 module.exports=router;
