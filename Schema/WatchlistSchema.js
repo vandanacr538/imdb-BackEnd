@@ -10,7 +10,7 @@ const schema=new mongoose.Schema({
         required:true
     },
     id:{
-        type:String,
+        type:Number,
         required:true
     },
     original_title:{

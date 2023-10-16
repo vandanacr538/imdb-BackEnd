@@ -53,5 +53,17 @@ router.get("/mywatchlist", async(req,res)=>{
     }
 });
 
+// API to remove a movie from Watchlist
+router.delete("/deletemoviefromwatchlist", async (req, res) => {
+  const decodeToken=jwt.verify(req.headers.authorization, "mysecretkey");
+  const {id} =req.body.element;
+  const isDeleted = await Watchlist.deleteOne({ userid: decodeToken._id, id: id });
+  if (isDeleted.deletedCount) {
+    console.log(isDeleted);
+    res.status(200).send({ msg: "data deleted " });
+  } else {
+    res.status(401).send({ msg: "issue occured" });
+  }
+});
 
 module.exports = router;
