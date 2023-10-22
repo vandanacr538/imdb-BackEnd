@@ -88,6 +88,25 @@ router.post("/verifyotp", async (req,res)=>{
     }
 })
 
+// API to resend OTP
+router.post("/resendotp", async(req, res)=>{
+    const {email}=req.body;
+    let otp = generateOtp();
+    const userExists=await CreateUser.findOne({email:email});
+    if(userExists){
+        const newOTP=await CreateUser.findOneAndUpdate({email:email},{
+            otp:otp
+        });
+        res.status(200).send({msg:"OTP sent"});
+        sendOTP(otp, email);
+        setTimeout(async () => {
+            console.log(' otp expiration time starts now ')
+            userExists.otp='';
+            await userExists.save();
+        }, 300000);
+    }
+})
+
 // API to edit user profile
 router.post("/edituserdata", async (req, res)=>{
     const {name, email, new_password, re_enter_new_password}=req.body;
