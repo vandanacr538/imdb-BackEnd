@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const jwt=require("jsonwebtoken");
 const Watchlist = require("../Schema/WatchlistSchema");
+const RouteGuard=require("../Middleware/RouteGuard");
 
 // API to add movies to watchlist
-router.post("/addtowatchlist", async (req, res) => {
+router.post("/addtowatchlist", RouteGuard, async (req, res) => {
     const {
     backdrop_path,
     id,
@@ -14,10 +15,9 @@ router.post("/addtowatchlist", async (req, res) => {
     release_date,
     vote_average,
   } = req.body;
-  const decodeToken=jwt.verify(req.headers.authorization, "mysecretkey");
-
+  const {_id} = req.decodedData;
   const newMovie = {
-    userid:decodeToken._id,
+    userid:_id,
     backdrop_path: backdrop_path,
     id: id,
     original_title: original_title,
@@ -26,7 +26,7 @@ router.post("/addtowatchlist", async (req, res) => {
     release_date: release_date,
     vote_average: vote_average,
   };
-  const alreadyExist=await Watchlist.findOne({userid:decodeToken._id, id:id});
+  const alreadyExist=await Watchlist.findOne({userid:_id, id:id});
   if(alreadyExist){
     res.status(200).send({msg:"This movie alraedy exists in Watchlist"});
   }
@@ -40,10 +40,8 @@ router.post("/addtowatchlist", async (req, res) => {
 });
 
 // API to get my watchlist
-router.get("/mywatchlist", async(req,res)=>{
-    const decodeToken=jwt.verify(req.headers.authorization, "mysecretkey");
-    console.log(decodeToken._id);
-    const mywatchlist= await Watchlist.find({userid:decodeToken._id});
+router.get("/mywatchlist", RouteGuard, async(req,res)=>{
+    const mywatchlist= await Watchlist.find({userid:req.decodedData._id});
     if(mywatchlist){
         const obj={results:mywatchlist}
         res.status(200).send(obj);
@@ -54,10 +52,9 @@ router.get("/mywatchlist", async(req,res)=>{
 });
 
 // API to remove a movie from Watchlist
-router.delete("/deletemoviefromwatchlist", async (req, res) => {
-  const decodeToken=jwt.verify(req.headers.authorization, "mysecretkey");
+router.delete("/deletemoviefromwatchlist", RouteGuard, async (req, res) => {
   const {id} =req.body.element;
-  const isDeleted = await Watchlist.deleteOne({ userid: decodeToken._id, id: id });
+  const isDeleted = await Watchlist.deleteOne({ userid:req.decodedData._id, id: id });
   if (isDeleted.deletedCount) {
     console.log(isDeleted);
     res.status(200).send({ msg: "data deleted " });
