@@ -3,10 +3,11 @@ const axios=require("axios");
 const router=express.Router();
 const jwt=require("jsonwebtoken");
 const Users=require("../Schema/UserSchema");
+const base64=require("base-64");
 
 // API to login to IMDb
 router.post("/loginapi", async(req, res)=>{
-    const{email, password}=req.body;
+    const{email, password}=JSON.parse(base64.decode(req.headers.authorization));
     const userExist=await Users.findOne({email:email});
     if(userExist){
         if(userExist.password===password){
@@ -26,7 +27,7 @@ router.post("/loginapi", async(req, res)=>{
 router.post("/oauth", async(req,res)=>{
     const userInfo = await axios
     .get('https://www.googleapis.com/oauth2/v3/userinfo', {
-      headers: { Authorization: `Bearer ${req.body.token}` },
+      headers: { Authorization: `Bearer ${req.headers.authorization}` },
     })
     const {name, email}=userInfo.data;
     const alreadyExists=await Users.findOne({email:email});
