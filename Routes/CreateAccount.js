@@ -6,6 +6,7 @@ dotenv.config();
 const nodemailer = require("nodemailer");
 const CreateUser=require("../Schema/UserSchema");
 const RouteGuard=require("../Middleware/RouteGuard");
+const base64=require("base-64");
 
 function generateOtp() {        
     const otp = Math.random() * 1000000;
@@ -32,15 +33,16 @@ const sendOTP=async(otp, newUserEmailID)=>{
 
 // API to create account for new user
 router.post("/createaccountapi", async(req, res)=>{
-    const{name, email, password, re_enter_password}=req.body;
+    const decodeCreateAccData=JSON.parse(base64.decode(req.headers.authorization));
+    const{name, email, new_password, re_enter_new_password}=decodeCreateAccData;
     console.log(req.body);
     let otp = generateOtp();
     const newUserData={
-    name: name,
-    email: email,
-    password: password,
-    re_enter_password: re_enter_password,
-    otp:otp
+        name: name,
+        email: email,
+        password: new_password,
+        re_enter_password: re_enter_new_password,
+        otp:otp
     }
     const alreadyUserExists=await CreateUser.findOne({email:email});
     if(alreadyUserExists){
@@ -72,8 +74,9 @@ router.post("/createaccountapi", async(req, res)=>{
 
 // API to verify OTP
 router.post("/verifyotp", async (req,res)=>{
-    const {email, otp} = req.body;
-    console.log(otp);
+    const decodeOTPData=JSON.parse(base64.decode(req.headers.authorization));
+    const {email, otp} = decodeOTPData;
+    console.log(decodeOTPData);
     const userExists=await CreateUser.findOne({email:email});
     const jwtToken=jwt.sign(userExists.toJSON(),"mysecretkey");
     if(userExists){
@@ -91,7 +94,7 @@ router.post("/verifyotp", async (req,res)=>{
 
 // API to resend OTP
 router.post("/resendotp", async(req, res)=>{
-    const {email}=req.body;
+    const email=base64.decode(req.headers.authorization);
     let otp = generateOtp();
     const userExists=await CreateUser.findOne({email:email});
     if(userExists){
@@ -110,7 +113,9 @@ router.post("/resendotp", async(req, res)=>{
 
 // API to edit user profile
 router.post("/edituserdata", async (req, res)=>{
-    const {name, email, new_password, re_enter_new_password}=req.body;
+    const decodeEditUserProfile=JSON.parse(base64.decode(req.headers.authorization))
+    // console.log(decodeEditUserProfile);
+    const {name, email, new_password, re_enter_new_password}=decodeEditUserProfile;
     const updatedUserData=await CreateUser.findOneAndUpdate({email:email},{
         name: name,
         email: email,
