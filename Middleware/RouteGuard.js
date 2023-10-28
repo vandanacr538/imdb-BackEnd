@@ -14,7 +14,7 @@ const RouteGuard=(req,res,next)=>{
     catch(e){
         console.log(e);
         console.log("Invalid request");
-        res.status(500).send({msg:"Something went wrong"})
+        res.status(500).send({msg:"Something went wrong"});
     }
 }
 
