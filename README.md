@@ -2,10 +2,6 @@
 
 This is IMDb Clone website back-end repository.
 
-## Front-end repository
-
-- [imdb](https://github.com/vandanacr538/imdb.git)
-
 ## Authors
 
 - [vandanacr538](https://github.com/vandanacr538)
@@ -16,6 +12,10 @@ This is IMDb Clone website back-end repository.
 - Express
 - nodemon
 - Mongodb
+
+## Front-end repository
+
+- [imdb-frontend](https://github.com/vandanacr538/imdb.git)
 
 ## Run Locally
 
