@@ -13,10 +13,6 @@ This is IMDb Clone website back-end repository.
 - nodemon
 - Mongodb
 
-## Front-end repository
-
-- [imdb-frontend](https://github.com/vandanacr538/imdb.git)
-
 ## Run Locally
 
 - To run this project back-end(server) locally follow following step below:-
